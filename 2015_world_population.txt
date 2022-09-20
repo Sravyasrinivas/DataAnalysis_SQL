@@ -1,0 +1,60 @@
+we use the dataset by CIA World Factbook and explore how the world population spreads across different countries.
+The data has information from only 261 different countries  and the other country is world. It consists of 11 rows
+(which is a combination of all the countries)
+
+id - id number for each country.
+code - country code, made from the two first letters of the country.
+area - total area of the country (area_water + area_land).
+population - population of the country
+population_growth - ratio of the population growth in 2015
+birth_rate
+death_rate
+migration_rate - ratio of people that left the country to another.
+
+-- analysing data 
+
+select max("area") as max_area_country,
+max("area_land") as max_arealand_country,
+max("area_water") as max_areawater_country from "worldpop";
+
+-- minimum and maximum population growth and population of all the countries
+
+-- The row "World" is the total of the whole database (261 countries). 
+-- It does appear as the "country" with the max population (7.2 billions) in our query 
+-- We need to write query accordingly, leaving "World" out of it. 
+
+select min("population") as min_populated,
+min("population_growth") as min_pop_growth,
+max("population") as max_populated,
+max("population_growth") as max_pop_growth from "worldpop"
+where "name"!='World'
+
+-- avgerages of population, population_growth and area 
+select avg("population") as avg_populated,
+avg("population_growth") as avg_pop_growth,
+avg("area") as avg_area from "worldpop"
+where "name"!='World'
+
+-- Which country has the highest population?
+
+select "name" from "worldpop" where "population" in (select max("population") from "worldpop" where "name"!='World')
+
+--  Which country has the least number of people?
+
+select "name" from "worldpop" where "population" in (select min("population") from "worldpop" where "name"!='World') order by "name" limit 1
+
+-- Which country is witnessing the highest population growth?
+
+select "name" from "worldpop" where "population_growth" in (select max("population_growth") from "worldpop" where "name"!='World')
+
+-- Which country has an extraordinary number for the population?
+-- as we can analyse from the data the name world which is actually a combination of all the countries has an extraordinary
+-- number for the population.
+
+select "name" from "worldpop" where "population" in (select max("population") from "worldpop")
+
+-- Which is the most densely populated country in the world?
+-- most densly populated could be described as the one whose population is more and the area is less i.e for a small area it should be having the most number of people living 
+
+select "population","name","area" from "worldpop" where "population" > (select avg("population") from "worldpop" where "name"!='World') and
+"area" < (select avg("area") from "worldpop" where "name"!='World') and "name"!='World' order by "population" desc 
